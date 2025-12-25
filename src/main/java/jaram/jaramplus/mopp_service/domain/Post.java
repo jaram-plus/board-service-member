@@ -34,7 +34,7 @@ public class Post {
         post.title = title;
         post.content = content;
         post.author = (author == null || author.isBlank()) ? "익명" : author;
-        post.time = LocalDateTime.now();
+        post.time = LocalDateTime.now().withSecond(0).withNano(0);
         return post;
     }
 }

@@ -37,3 +37,8 @@ out/
 /src/main/resources/*.properties
 /src/main/resources/*.yml
 .env
+
+# intellij files
+.gradle/
+.idea/
+build/

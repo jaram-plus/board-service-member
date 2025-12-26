@@ -1,0 +1,8 @@
+# private files
+application.yaml
+.env
+
+# intellij files
+.gradle/
+.idea/
+build/

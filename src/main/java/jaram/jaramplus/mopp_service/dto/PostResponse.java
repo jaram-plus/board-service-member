@@ -4,7 +4,7 @@ import jaram.jaramplus.mopp_service.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @AllArgsConstructor
@@ -13,7 +13,9 @@ public class PostResponse {
     private String title;
     private String content;
     private String author;
-    private LocalDateTime time;
+    private String time;
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
     public static PostResponse from(Post post) {
         return new PostResponse(
@@ -21,7 +23,7 @@ public class PostResponse {
             post.getTitle(),
             post.getContent(),
             post.getAuthor(),
-            post.getTime()
+            post.getTime().format(TIME_FORMATTER)
         );
     }
 }

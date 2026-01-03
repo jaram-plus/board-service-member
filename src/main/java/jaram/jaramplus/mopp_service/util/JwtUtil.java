@@ -11,25 +11,25 @@ import java.util.Date;
 
 @Component
 @Slf4j
-public class JwtTokenProvider {
+public class JwtUtil {
 
     private final SecretKey secretKey;
     private final Long accessTokenExpTime;
     private final Long refreshTokenExpTime;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-                            @Value("${jwt.access-token-expirations}") Long accessTokenExpTime,
-                            @Value("${jwt.refresh-token-expirations}")Long refreshTokenExpTime) {
+    public JwtUtil(@Value("${jwt.secret}") String secretKey,
+                   @Value("${jwt.access-token-expirations}") Long accessTokenExpTime,
+                   @Value("${jwt.refresh-token-expirations}")Long refreshTokenExpTime) {
         this.secretKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
         this.accessTokenExpTime = accessTokenExpTime;
         this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
-    public String createAccessToken(String email,  Long id ){
+    public String createAccessToken(Long id,  String email ){
         return createJwt("accessToken", id, email, accessTokenExpTime);
     }
 
-    public String createRefreshToken(String email, Long id){
+    public String createRefreshToken(Long id,  String email){
         return createJwt("refreshToken", id, email ,refreshTokenExpTime );
     }
 
@@ -83,9 +83,22 @@ public class JwtTokenProvider {
         return refreshTokenExpTime;
     }
 
+    public Long getMemberId(String token) {
+        return Long.parseLong(Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject());
+    }
 
-
-
-
+    public String getEmail(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("email", String.class);
+    }
 
 }

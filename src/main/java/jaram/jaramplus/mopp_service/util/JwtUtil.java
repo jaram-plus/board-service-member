@@ -46,7 +46,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean validateAccessToken(String token){
+    public boolean validateToken(String token){
         try{
             Jwts.parser()
                     .verifyWith(secretKey)

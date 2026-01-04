@@ -23,10 +23,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RedisService redisService;
     private final CookieUtil cookieUtil;
 
-    @Value("${jwt.access-token-expirations.}")
+    @Value("${jwt.access-token-expirations}")
     private int accessExp;
 
-    @Value("${jwt.refresh-token-expirations.}")
+    @Value("${jwt.refresh-token-expirations}")
     private int refreshExp;
 
     @Value("${app.frontend-url}")

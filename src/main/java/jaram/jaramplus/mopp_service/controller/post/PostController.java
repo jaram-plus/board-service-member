@@ -35,8 +35,8 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping(value = "/posts", params = "id")
-	public ResponseEntity<PostResponse> getPostById(@RequestParam Long id) {
+	@GetMapping(value = "/posts/{id}")
+	public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
 		PostResponse response = postService.getPostById(id);
 		return ResponseEntity.ok(response);
 	}

@@ -1,4 +1,4 @@
-package jaram.jaramplus.mopp_service.controller.post.dto;
+package jaram.jaramplus.mopp_service.dto;
 
 import java.util.List;
 

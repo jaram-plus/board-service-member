@@ -1,7 +1,7 @@
 package jaram.jaramplus.mopp_service.service;
 
-import jaram.jaramplus.mopp_service.controller.post.dto.PostListResponse;
-import jaram.jaramplus.mopp_service.controller.post.dto.PostSummaryDto;
+import jaram.jaramplus.mopp_service.dto.PostListResponse;
+import jaram.jaramplus.mopp_service.dto.PostSummaryDto;
 import jaram.jaramplus.mopp_service.domain.Post;
 import jaram.jaramplus.mopp_service.dto.CreatePostRequest;
 import jaram.jaramplus.mopp_service.dto.PostResponse;

@@ -14,6 +14,7 @@ public class PostResponse {
     private String content;
     private String author;
     private String time;
+	private int views;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 
@@ -23,7 +24,8 @@ public class PostResponse {
             post.getTitle(),
             post.getContent(),
             post.getAuthor(),
-            post.getTime().format(TIME_FORMATTER)
+            post.getTime().format(TIME_FORMATTER),
+	        post.getViews()
         );
     }
 }

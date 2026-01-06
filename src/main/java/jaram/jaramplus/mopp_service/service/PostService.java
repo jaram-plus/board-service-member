@@ -40,7 +40,7 @@ public class PostService {
         Page<PostSummaryProjection> page = postRepository.findAllBy(pageable);
 
         List<PostSummaryDto> list = page.getContent().stream()
-                .map(p -> new PostSummaryDto(p.getTitle(), p.getAuthor(), p.getTime()))
+                .map(p -> new PostSummaryDto(p.getTitle(), p.getAuthor(), p.getTime(), p.getViews()))
                 .toList();
         return new PostListResponse(list);
     }

@@ -8,9 +8,10 @@ public record PostSummaryDto(
 		String title,
 		String author,
 		@com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
-		LocalDateTime time
+		LocalDateTime time,
+		int views
 ) {
 	public static PostSummaryDto from(Post post) {
-		return new PostSummaryDto(post.getTitle(), post.getAuthor(), post.getTime());
+		return new PostSummaryDto(post.getTitle(), post.getAuthor(), post.getTime(), post.getViews());
 	}
 }

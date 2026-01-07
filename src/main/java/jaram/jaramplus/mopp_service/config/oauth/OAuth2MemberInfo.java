@@ -1,4 +1,4 @@
-package jaram.jaramplus.mopp_service.config;
+package jaram.jaramplus.mopp_service.config.oauth;
 
 import java.util.Map;
 

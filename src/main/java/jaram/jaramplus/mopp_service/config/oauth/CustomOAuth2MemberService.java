@@ -1,4 +1,4 @@
-package jaram.jaramplus.mopp_service.config;
+package jaram.jaramplus.mopp_service.config.oauth;
 
 import jakarta.transaction.Transactional;
 import jaram.jaramplus.mopp_service.domain.Member;

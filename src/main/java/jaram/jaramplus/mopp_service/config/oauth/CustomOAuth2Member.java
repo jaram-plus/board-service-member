@@ -1,7 +1,6 @@
-package jaram.jaramplus.mopp_service.config;
+package jaram.jaramplus.mopp_service.config.oauth;
 
 import jaram.jaramplus.mopp_service.domain.Member;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;

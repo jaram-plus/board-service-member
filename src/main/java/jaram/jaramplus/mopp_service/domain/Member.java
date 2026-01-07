@@ -1,7 +1,7 @@
 package jaram.jaramplus.mopp_service.domain;
 
 import jakarta.persistence.*;
-import jaram.jaramplus.mopp_service.config.OAuth2MemberInfo;
+import jaram.jaramplus.mopp_service.config.oauth.OAuth2MemberInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

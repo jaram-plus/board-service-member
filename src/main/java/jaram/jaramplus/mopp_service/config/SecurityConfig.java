@@ -1,5 +1,8 @@
 package jaram.jaramplus.mopp_service.config;
 
+import jaram.jaramplus.mopp_service.config.oauth.CustomOAuth2MemberService;
+import jaram.jaramplus.mopp_service.config.oauth.OAuth2FailureHandler;
+import jaram.jaramplus.mopp_service.config.oauth.OAuth2SuccessHandler;
 import jaram.jaramplus.mopp_service.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;

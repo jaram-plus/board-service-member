@@ -15,9 +15,8 @@ public class CookieUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);   //todo https 적용이후 true로 수정
         cookie.setMaxAge(maxAge);
-        cookie.setAttribute("SameSite", "Lax");
 
         response.addCookie(cookie);
     }

@@ -1,16 +1,17 @@
-package jaram.jaramplus.mopp_service.controller.post.dto;
+package jaram.jaramplus.mopp_service.dto;
 
 import jaram.jaramplus.mopp_service.domain.Post;
 
 import java.time.LocalDateTime;
 
 public record PostSummaryDto(
-		String postTitle,
+		String title,
 		String author,
 		@com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
-		LocalDateTime creationDate
+		LocalDateTime time,
+		int views
 ) {
 	public static PostSummaryDto from(Post post) {
-		return new PostSummaryDto(post.getTitle(), post.getAuthor(), post.getTime());
+		return new PostSummaryDto(post.getTitle(), post.getAuthor(), post.getTime(), post.getViews());
 	}
 }

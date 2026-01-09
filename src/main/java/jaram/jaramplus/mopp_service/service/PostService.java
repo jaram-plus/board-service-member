@@ -1,7 +1,7 @@
 package jaram.jaramplus.mopp_service.service;
 
-import jaram.jaramplus.mopp_service.controller.post.dto.PostListResponse;
-import jaram.jaramplus.mopp_service.controller.post.dto.PostSummaryDto;
+import jaram.jaramplus.mopp_service.dto.PostListResponse;
+import jaram.jaramplus.mopp_service.dto.PostSummaryDto;
 import jaram.jaramplus.mopp_service.domain.Post;
 import jaram.jaramplus.mopp_service.dto.CreatePostRequest;
 import jaram.jaramplus.mopp_service.dto.PostResponse;
@@ -40,7 +40,7 @@ public class PostService {
         Page<PostSummaryProjection> page = postRepository.findAllBy(pageable);
 
         List<PostSummaryDto> list = page.getContent().stream()
-                .map(p -> new PostSummaryDto(p.getTitle(), p.getAuthor(), p.getTime()))
+                .map(p -> new PostSummaryDto(p.getTitle(), p.getAuthor(), p.getTime(), p.getViews()))
                 .toList();
         return new PostListResponse(list);
     }

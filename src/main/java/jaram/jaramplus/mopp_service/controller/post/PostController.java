@@ -1,7 +1,7 @@
 package jaram.jaramplus.mopp_service.controller.post;
 
 import jakarta.validation.Valid;
-import jaram.jaramplus.mopp_service.controller.post.dto.PostListResponse;
+import jaram.jaramplus.mopp_service.dto.PostListResponse;
 import jaram.jaramplus.mopp_service.dto.CreatePostRequest;
 import jaram.jaramplus.mopp_service.dto.PostResponse;
 import jaram.jaramplus.mopp_service.service.PostService;
@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/jaram/board")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -35,8 +35,8 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping(value = "/posts", params = "id")
-	public ResponseEntity<PostResponse> getPostById(@RequestParam Long id) {
+	@GetMapping(value = "/posts/{id}")
+	public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
 		PostResponse response = postService.getPostById(id);
 		return ResponseEntity.ok(response);
 	}

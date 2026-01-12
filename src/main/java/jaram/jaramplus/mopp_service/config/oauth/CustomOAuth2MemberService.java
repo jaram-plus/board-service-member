@@ -3,6 +3,7 @@ package jaram.jaramplus.mopp_service.config.oauth;
 import jakarta.transaction.Transactional;
 import jaram.jaramplus.mopp_service.domain.Member;
 import jaram.jaramplus.mopp_service.repository.MemberRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -30,15 +31,27 @@ public class CustomOAuth2MemberService extends DefaultOAuth2UserService {
         OAuth2MemberInfo oAuth2UserInfo = getOAuth2MemberInfo(registrationId, oAuth2User.getAttributes());
 
 
-        String email = oAuth2UserInfo.getEmail();
-        if (email == null || !email.endsWith(allowedEmailDomain)) {
-            throw new OAuth2AuthenticationException(new OAuth2Error("invalid_email_domain"),
-                    "한양대학교 이메일(@hanyang.ac.kr)만 사용 가능합니다.");
-        }
+        String email = validateMemberInfo(oAuth2UserInfo);
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> memberRepository.save(Member.from(oAuth2UserInfo)));
 
         return new CustomOAuth2Member(member, oAuth2User.getAttributes());
+    }
+
+    private @NonNull String validateMemberInfo(OAuth2MemberInfo oAuth2UserInfo) {
+        String email = oAuth2UserInfo.getEmail();
+        String id = oAuth2UserInfo.getId();
+
+        if(id == null){
+            throw new OAuth2AuthenticationException(new OAuth2Error("missing_user_id"),
+                    "사용자 ID를 가져올 수 없습니다.");
+        }
+
+        if (email == null || !email.endsWith(allowedEmailDomain)) {
+            throw new OAuth2AuthenticationException(new OAuth2Error("invalid_email_domain"),
+                    "한양대학교 이메일(@hanyang.ac.kr)만 사용 가능합니다.");
+        }
+        return email;
     }
 
     private OAuth2MemberInfo getOAuth2MemberInfo (String registrationId, Map <String, Object> attributes){

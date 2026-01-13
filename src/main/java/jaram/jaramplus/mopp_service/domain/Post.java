@@ -29,12 +29,16 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime time;
 
+	@Column(nullable = false)
+	private int views;
+
     public static Post createPost(String title, String content, String author) {
         Post post = new Post();
         post.title = title;
         post.content = content;
         post.author = (author == null || author.isBlank()) ? "익명" : author;
         post.time = LocalDateTime.now().withSecond(0).withNano(0);
+		post.views = 0;
         return post;
     }
 }

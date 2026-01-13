@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,9 +36,9 @@ public class PostController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@GetMapping(value = "/posts/{id}")
-	public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
-		PostResponse response = postService.getPostById(id);
+	@GetMapping(value = "/posts/{postId}")
+	public ResponseEntity<PostResponse> getPostById(@PathVariable Long postId, @AuthenticationPrincipal Long memberId) {
+		PostResponse response = postService.getPostById(postId, memberId);
 		return ResponseEntity.ok(response);
 	}
 

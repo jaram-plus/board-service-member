@@ -6,4 +6,5 @@ public interface PostSummaryProjection {
 	String getTitle();
 	String getAuthor();
 	LocalDateTime getTime();
+	int getViews();
 }

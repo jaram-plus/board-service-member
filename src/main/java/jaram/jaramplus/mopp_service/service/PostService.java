@@ -8,11 +8,14 @@ import jaram.jaramplus.mopp_service.dto.PostResponse;
 import jaram.jaramplus.mopp_service.repository.PostRepository;
 import jaram.jaramplus.mopp_service.repository.projection.PostSummaryProjection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -20,9 +23,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostService {
 
-    private final PostRepository postRepository;
+	@Value("${spring.data.redis.view-dedupe-ttl}")
+	private Duration VIEW_TTL;
 
-    @Transactional
+    private final PostRepository postRepository;
+	private final StringRedisTemplate stringRedisTemplate;
+
+	@Transactional
     public PostResponse createPost(CreatePostRequest request) {
         Post post = Post.createPost(
             request.getTitle(),
@@ -45,9 +52,24 @@ public class PostService {
         return new PostListResponse(list);
     }
 
-    public PostResponse getPostById(Long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + id));
+	@Transactional
+	public PostResponse getPostById(Long postId, Long memberId) {
+
+		String key = "post:view:dedupe:" + postId +  ":" + memberId;
+		Boolean firstView = stringRedisTemplate.opsForValue()
+				.setIfAbsent(key, "1", VIEW_TTL);
+
+		if (Boolean.TRUE.equals(firstView)) {
+			try{
+				postRepository.incrementViewCount(postId);
+			} catch (RuntimeException e){
+				stringRedisTemplate.delete(key);
+				throw e;
+			}
+		}
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
         return PostResponse.from(post);
     }
 }

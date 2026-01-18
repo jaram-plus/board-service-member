@@ -54,6 +54,8 @@ public class PostService {
 
 	@Transactional
 	public PostResponse getPostById(Long postId, Long memberId) {
+		Post post = postRepository.findById(postId)
+				.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
 
 		String key = "post:view:dedupe:" + postId +  ":" + memberId;
 		Boolean firstView = stringRedisTemplate.opsForValue()
@@ -68,8 +70,6 @@ public class PostService {
 			}
 		}
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다. ID: " + postId));
         return PostResponse.from(post);
     }
 }

@@ -52,7 +52,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + memberId));  //todo 예외처리
     }
 
-    public boolean isExpiredAccessToken(String accessToken){
+    public boolean isValidAccessToken(String accessToken){
         return jwtUtil.validateToken(accessToken);
     }
 

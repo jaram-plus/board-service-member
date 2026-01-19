@@ -35,7 +35,7 @@ public class AuthController {
             @CookieValue(name = "accessToken")String accessToken){
         AccessTokenResponse response = new AccessTokenResponse(accessToken);
 
-        if(!memberService.isExpiredAccessToken(accessToken)){
+        if(!memberService.isValidAccessToken(accessToken)){
             return ResponseEntity.status(401)
                     .body(Map.of("error", "Access token not found in cookies")); //todo 예외처리 개선
         }

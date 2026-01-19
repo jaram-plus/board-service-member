@@ -39,7 +39,8 @@ public class SecurityConfig {
                   .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                   .authorizeHttpRequests(auth -> auth
                           .requestMatchers("/", "/auth/**", "/login/**", "/oauth2/**").permitAll()
-                  .anyRequest().authenticated()
+                          .requestMatchers("/admin/**").hasRole("ADMIN")
+                          .anyRequest().hasRole("APPROVED")
                   )
                   .oauth2Login(oauth2 -> oauth2
                           .userInfoEndpoint(userInfo ->

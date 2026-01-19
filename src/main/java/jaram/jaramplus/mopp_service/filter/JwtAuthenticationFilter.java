@@ -4,17 +4,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jaram.jaramplus.mopp_service.domain.Member;
+import jaram.jaramplus.mopp_service.domain.Role;
+import jaram.jaramplus.mopp_service.repository.MemberRepository;
 import jaram.jaramplus.mopp_service.util.CookieUtil;
 import jaram.jaramplus.mopp_service.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CookieUtil cookieUtil;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -30,9 +37,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (token != null && jwtUtil.validateToken(token)) {
                 Long memberId = jwtUtil.getMemberId(token);
+                Role role = jwtUtil.getRole(token);
+
+                List<GrantedAuthority> authorities = new ArrayList<>();
+
+                // JWT에서 role 추출하여 권한 추가
+                if (role != null) {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+                }
+
+                // DB에서 member 조회하여 status 권한 추가
+                memberRepository.findById(memberId).ifPresent(member -> {
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getStatus().name()));
+                });
 
                 UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(memberId, null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(memberId, null, authorities);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

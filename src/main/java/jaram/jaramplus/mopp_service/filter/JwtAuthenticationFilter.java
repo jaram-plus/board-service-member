@@ -2,6 +2,7 @@ package jaram.jaramplus.mopp_service.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jaram.jaramplus.mopp_service.util.CookieUtil;
@@ -26,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = resolveToken(request);
+            String token = resolveAccessToken(request);
 
             if (token != null && jwtUtil.validateToken(token)) {
                 Long memberId = jwtUtil.getMemberId(token);
@@ -43,11 +44,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveToken(HttpServletRequest request){
+    private String resolveAccessToken(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }
         return null;
     }
+
+	public String resolveRefreshToken(HttpServletRequest request){
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) return null;
+
+		for (Cookie c : cookies) {
+			if(c.getName().equals("refreshToken")){
+				return c.getValue();
+			}
+		}
+		return null;
+	}
 }

@@ -60,6 +60,7 @@ public class JwtUtil {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
+			log.warn("JWT 토큰 검증 완료!");
             return true;
 
         }catch(ExpiredJwtException e){

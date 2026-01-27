@@ -64,10 +64,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request){
+        // 1. Authorization 헤더에서 토큰 확인
         String bearerToken = request.getHeader("Authorization");
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }
+
+        // 2. 쿠키에서 토큰 확인 (타임리프 페이지용)
+        String cookieToken = cookieUtil.getCookie(request, "accessToken")
+                .map(cookie -> cookie.getValue())
+                .orElse(null);
+        if (StringUtils.hasText(cookieToken)) {
+            return cookieToken;
+        }
+
         return null;
     }
 }

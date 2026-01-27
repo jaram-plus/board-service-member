@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jaram.jaramplus.mopp_service.domain.MemberStatus;
+import jaram.jaramplus.mopp_service.domain.Role;
 import jaram.jaramplus.mopp_service.service.RedisService;
 import jaram.jaramplus.mopp_service.util.CookieUtil;
 import jaram.jaramplus.mopp_service.util.JwtUtil;
@@ -50,9 +51,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             cookieUtil.addCookie(response, "accessToken", accessToken, accessExp);
             cookieUtil.addCookie(response, "refreshToken", refreshToken, refreshExp);
 
-            redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/success")
-                    .build()
-                    .toUriString();
+            if (oAuth2Member.getRole() == Role.ADMIN) {
+                redirectUrl = "/admin/dashboard";
+            } else {
+                redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/success")
+                        .build()
+                        .toUriString();
+            }
         } else if (status == MemberStatus.PENDING) {
             redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/pending")
                     .build()

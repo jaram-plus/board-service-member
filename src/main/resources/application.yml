@@ -45,3 +45,6 @@ jwt:
 
 app:
   frontend-url: ${REDIRECT_URL}
+  admin:
+    email: ${ADMIN_EMAIL}
+    name: ${ADMIN_NAME:관리자}

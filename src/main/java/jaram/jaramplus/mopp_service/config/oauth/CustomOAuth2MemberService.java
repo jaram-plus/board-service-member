@@ -2,6 +2,7 @@ package jaram.jaramplus.mopp_service.config.oauth;
 
 import jakarta.transaction.Transactional;
 import jaram.jaramplus.mopp_service.domain.Member;
+import jaram.jaramplus.mopp_service.domain.MemberStatus;
 import jaram.jaramplus.mopp_service.repository.MemberRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,12 @@ public class CustomOAuth2MemberService extends DefaultOAuth2UserService {
 
         String email = validateMemberInfo(oAuth2UserInfo);
         Member member = memberRepository.findByEmail(email)
+                .map(existingMember -> {
+                    if (existingMember.getStatus() == MemberStatus.REJECTED) {
+                        existingMember.reapply();
+                    }
+                    return existingMember;
+                })
                 .orElseGet(() -> memberRepository.save(Member.from(oAuth2UserInfo)));
 
         return new CustomOAuth2Member(member, oAuth2User.getAttributes());

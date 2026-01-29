@@ -10,7 +10,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 import org.springframework.http.MediaType;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Map;
 

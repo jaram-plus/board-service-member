@@ -34,6 +34,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
+    @Value("${app.backend-url}")
+    private String backendUrl;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -52,7 +55,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             cookieUtil.addCookie(response, "refreshToken", refreshToken, refreshExp);
 
             if (oAuth2Member.getRole() == Role.ADMIN) {
-                redirectUrl = "/admin/dashboard";
+                redirectUrl = backendUrl + "/admin/dashboard";
             } else {
                 redirectUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/auth/success")
                         .build()

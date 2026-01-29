@@ -37,19 +37,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (token != null && jwtUtil.validateToken(token)) {
                 Long memberId = jwtUtil.getMemberId(token);
-                Role role = jwtUtil.getRole(token);
+
+                // DB에서 회원 조회 - 없으면 인증 거부
+                Member member = memberRepository.findById(memberId).orElse(null);
+                if (member == null) {
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 List<GrantedAuthority> authorities = new ArrayList<>();
 
-                // JWT에서 role 추출하여 권한 추가
-                if (role != null) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-                }
+                // DB에서 조회한 회원의 role 권한 추가
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getRole().name()));
 
-                // DB에서 member 조회하여 status 권한 추가
-                memberRepository.findById(memberId).ifPresent(member -> {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getStatus().name()));
-                });
+                // DB에서 조회한 회원의 status 권한 추가
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getStatus().name()));
 
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(memberId, null, authorities);

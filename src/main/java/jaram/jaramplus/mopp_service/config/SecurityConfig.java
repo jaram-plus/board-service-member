@@ -25,13 +25,16 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final CustomOAuth2MemberService customOAuth2MemberService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final JwtLogoutHandler jwtLogoutHandler;
+	private final AuthLogoutSuccessHandler authLogoutSuccessHandler;
 
     @Qualifier("corsConfigurationSource")
     private final CorsConfigurationSource corsConfig;
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtLogoutHandler jwtLogoutHandler, AuthLogoutSuccessHandler authLogoutSuccessHandler) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
           http.csrf(AbstractHttpConfigurer::disable)
                   .httpBasic((AbstractHttpConfigurer::disable))
                   .formLogin(AbstractHttpConfigurer::disable)
@@ -39,7 +42,12 @@ public class SecurityConfig {
                   .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                   .authorizeHttpRequests(auth -> auth
                           .requestMatchers("/", "/auth/**", "/login/**", "/logout", "/oauth2/**").permitAll()
-                  .anyRequest().authenticated()
+                          .requestMatchers("/admin/login").permitAll()
+                          .requestMatchers("/admin/**").hasRole("ADMIN")
+                          .anyRequest().hasRole("APPROVED")
+                  )
+                  .exceptionHandling(exception -> exception
+                          .authenticationEntryPoint(customAuthenticationEntryPoint)
                   )
                   .oauth2Login(oauth2 -> oauth2
                           .userInfoEndpoint(userInfo ->

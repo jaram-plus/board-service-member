@@ -25,6 +25,7 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final CustomOAuth2MemberService customOAuth2MemberService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Qualifier("corsConfigurationSource")
     private final CorsConfigurationSource corsConfig;
@@ -39,7 +40,12 @@ public class SecurityConfig {
                   .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                   .authorizeHttpRequests(auth -> auth
                           .requestMatchers("/", "/auth/**", "/login/**", "/oauth2/**").permitAll()
-                  .anyRequest().authenticated()
+                          .requestMatchers("/admin/login").permitAll()
+                          .requestMatchers("/admin/**").hasRole("ADMIN")
+                          .anyRequest().hasRole("APPROVED")
+                  )
+                  .exceptionHandling(exception -> exception
+                          .authenticationEntryPoint(customAuthenticationEntryPoint)
                   )
                   .oauth2Login(oauth2 -> oauth2
                           .userInfoEndpoint(userInfo ->

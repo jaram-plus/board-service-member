@@ -40,7 +40,7 @@ public class MemberService {
         }
 
         Member member = getUserById(memberId);
-        String newAccessToken = jwtUtil.createAccessToken(memberId, member.getEmail());
+        String newAccessToken = jwtUtil.createAccessToken(memberId, member.getEmail(), member.getRole());
         cookieUtil.addCookie(response, "accessToken", newAccessToken, accessExp);
 
         return TokenResponse.of(newAccessToken, accessExp / 1000);

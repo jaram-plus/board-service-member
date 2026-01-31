@@ -45,3 +45,7 @@ jwt:
 
 app:
   frontend-url: ${REDIRECT_URL}
+  backend-url: ${BACKEND_URL:http://localhost:8080}
+  admin:
+    email: ${ADMIN_EMAIL}
+    name: ${ADMIN_NAME:관리자}

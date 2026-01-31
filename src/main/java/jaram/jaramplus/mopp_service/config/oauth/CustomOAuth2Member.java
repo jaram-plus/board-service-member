@@ -1,6 +1,8 @@
 package jaram.jaramplus.mopp_service.config.oauth;
 
 import jaram.jaramplus.mopp_service.domain.Member;
+import jaram.jaramplus.mopp_service.domain.MemberStatus;
+import jaram.jaramplus.mopp_service.domain.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -15,12 +17,16 @@ public class CustomOAuth2Member implements OAuth2User {
     private Long memberId;
     private String email;
     private String name;
+    private MemberStatus status;
+    private Role role;
     private Map<String, Object> attributes;
 
     public CustomOAuth2Member(Member member, Map<String, Object> attributes) {
         this.memberId = member.getId();
         this.email = member.getEmail();
         this.name = member.getName();
+        this.status = member.getStatus();
+        this.role = member.getRole();
         this.attributes = attributes;
     }
 

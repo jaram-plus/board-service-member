@@ -1,6 +1,7 @@
 package jaram.jaramplus.mopp_service.util;
 
 import io.jsonwebtoken.*;
+import jaram.jaramplus.mopp_service.domain.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,23 +26,29 @@ public class JwtUtil {
         this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
-    public String createAccessToken(Long id,  String email ){
-        return createJwt("accessToken", id, email, accessTokenExpTime);
+    public String createAccessToken(Long id, String email, Role role) {
+        return createJwt("accessToken", id, email, role, accessTokenExpTime);
     }
 
-    public String createRefreshToken(Long id,  String email){
-        return createJwt("refreshToken", id, email ,refreshTokenExpTime );
+    public String createRefreshToken(Long id, String email) {
+        return createJwt("refreshToken", id, email, null, refreshTokenExpTime);
     }
 
-    private String createJwt(String category, Long memberId, String email, Long expTime ){
+    private String createJwt(String category, Long memberId, String email, Role role, Long expTime) {
         Date date = new Date();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .issuer("mopp")
                 .subject(String.valueOf(memberId))
-                .claim("category",category  )
-                .claim("email", email)
+                .claim("category", category)
+                .claim("email", email);
+
+        if (role != null) {
+            builder.claim("role", role.name());
+        }
+
+        return builder
                 .issuedAt(date)
-                .expiration(new Date(new Date().getTime()+ expTime ))
+                .expiration(new Date(new Date().getTime() + expTime))
                 .signWith(secretKey)
                 .compact();
     }
@@ -100,6 +107,16 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("email", String.class);
+    }
+
+    public Role getRole(String token) {
+        String roleName = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+        return roleName != null ? Role.valueOf(roleName) : null;
     }
 
 }

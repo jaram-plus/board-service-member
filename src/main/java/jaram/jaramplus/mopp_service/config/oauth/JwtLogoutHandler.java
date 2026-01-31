@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jaram.jaramplus.mopp_service.filter.JwtAuthenticationFilter;
 import jaram.jaramplus.mopp_service.service.RedisService;
+import jaram.jaramplus.mopp_service.util.CookieUtil;
 import jaram.jaramplus.mopp_service.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ public class JwtLogoutHandler implements LogoutHandler {
 	private final JwtUtil jwtUtil;
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final RedisService redisService;
+	private final CookieUtil cookieUtil;
 
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -33,8 +35,8 @@ public class JwtLogoutHandler implements LogoutHandler {
 		if(userId != null){
 			redisService.deleteRefreshToken(userId);
 		}
-		clearAccessCookie(response);
-		clearRefreshCookie(response);
+		cookieUtil.deleteCookie(response, "refreshToken");
+		cookieUtil.deleteCookie(response, "accessToken");
 	}
 
 	private Long extractUserId(Authentication authentication) {
@@ -53,20 +55,5 @@ public class JwtLogoutHandler implements LogoutHandler {
 			}
 		}
 		return null;
-	}
-
-	private void clearRefreshCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie("refreshToken", "");
-		cookie.setPath("/");
-		cookie.setMaxAge(0);
-		// cookie.setSecure(true); // TODO: HTTPS면 켜는 게 맞음
-		response.addCookie(cookie);
-	}
-	private void clearAccessCookie(HttpServletResponse response) {
-		Cookie cookie = new Cookie("accessToken", "");
-		cookie.setPath("/");
-		cookie.setMaxAge(0);
-		// cookie.setSecure(true); // TODO: HTTPS면 켜는 게 맞음
-		response.addCookie(cookie);
 	}
 }

@@ -1,19 +1,19 @@
 package jaram.jaramplus.mopp_service.config;
 
-import jaram.jaramplus.mopp_service.config.oauth.CustomOAuth2MemberService;
-import jaram.jaramplus.mopp_service.config.oauth.OAuth2FailureHandler;
-import jaram.jaramplus.mopp_service.config.oauth.OAuth2SuccessHandler;
+import jaram.jaramplus.mopp_service.config.oauth.*;
 import jaram.jaramplus.mopp_service.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -26,6 +26,8 @@ public class SecurityConfig {
     private final CustomOAuth2MemberService customOAuth2MemberService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final JwtLogoutHandler jwtLogoutHandler;
+	private final AuthLogoutSuccessHandler authLogoutSuccessHandler;
 
     @Qualifier("corsConfigurationSource")
     private final CorsConfigurationSource corsConfig;
@@ -39,7 +41,7 @@ public class SecurityConfig {
                   .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                   .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                   .authorizeHttpRequests(auth -> auth
-                          .requestMatchers("/", "/auth/**", "/login/**", "/oauth2/**").permitAll()
+                          .requestMatchers("/", "/auth/**", "/login/**", "/logout", "/oauth2/**").permitAll()
                           .requestMatchers("/admin/login").permitAll()
                           .requestMatchers("/admin/**").hasRole("ADMIN")
                           .anyRequest().hasRole("APPROVED")
@@ -52,7 +54,16 @@ public class SecurityConfig {
                                           userInfo.userService(customOAuth2MemberService))
                           .successHandler(oAuth2SuccessHandler)
                           .failureHandler(oAuth2FailureHandler)
-                  );
+                  )
+		          .logout(logout -> logout
+				          .logoutRequestMatcher(
+						          PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/logout")
+				          )
+				          .addLogoutHandler(jwtLogoutHandler)
+				          .logoutSuccessHandler(authLogoutSuccessHandler)
+				          .invalidateHttpSession(false)
+				          .clearAuthentication(true)
+		          );
 
         http.cors(cors -> cors.configurationSource(corsConfig));
         return  http.build();

@@ -21,10 +21,6 @@ public class CreatePostRequest {
     @SafeText
     private String content;
 
-    @Size(max = 50, message = "작성자명은 50자 이하여야 합니다")
-    @SafeText
-    private String author;
-
 	@NotNull
 	private boolean anonymous;
 }

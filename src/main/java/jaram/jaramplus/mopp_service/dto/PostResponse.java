@@ -23,7 +23,7 @@ public class PostResponse {
             post.getId(),
             post.getTitle(),
             post.getContent(),
-	        post.isAnonymous() ? null : post.getAuthor().getName(),
+	        post.isAnonymous() ? "익명" : post.getAuthor().getName(),
             post.getTime().format(TIME_FORMATTER),
 	        post.getViews()
         );

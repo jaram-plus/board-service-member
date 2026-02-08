@@ -1,10 +1,12 @@
 package jaram.jaramplus.mopp_service.service;
 
+import jaram.jaramplus.mopp_service.domain.Member;
 import jaram.jaramplus.mopp_service.dto.PostListResponse;
 import jaram.jaramplus.mopp_service.dto.PostSummaryDto;
 import jaram.jaramplus.mopp_service.domain.Post;
 import jaram.jaramplus.mopp_service.dto.CreatePostRequest;
 import jaram.jaramplus.mopp_service.dto.PostResponse;
+import jaram.jaramplus.mopp_service.repository.MemberRepository;
 import jaram.jaramplus.mopp_service.repository.PostRepository;
 import jaram.jaramplus.mopp_service.repository.projection.PostSummaryProjection;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostService {
 
+	private final MemberRepository memberRepository;
+	private final MemberService memberService;
 	@Value("${spring.data.redis.view-dedupe-ttl}")
 	private Duration VIEW_TTL;
 
@@ -30,11 +34,19 @@ public class PostService {
 	private final StringRedisTemplate stringRedisTemplate;
 
 	@Transactional
-    public PostResponse createPost(CreatePostRequest request) {
+    public PostResponse createPost(Long memberId, CreatePostRequest request) {
+
+		if(!memberRepository.existsById(memberId)) {
+			throw new IllegalArgumentException("존재하지 않는 사용자입니다. memberId=" + memberId);
+		}
+
+		Member member = memberService.getUserById(memberId);
+
         Post post = Post.createPost(
             request.getTitle(),
             request.getContent(),
-            request.getAuthor()
+			member,
+	        request.isAnonymous()
         );
 
         Post savedPost = postRepository.save(post);

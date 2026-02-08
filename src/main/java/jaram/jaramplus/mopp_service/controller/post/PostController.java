@@ -31,8 +31,9 @@ public class PostController {
 
 	@PostMapping("/posts")
 	public ResponseEntity<PostResponse> createPost(
+			@AuthenticationPrincipal Long memberId,
 			@Valid @RequestBody CreatePostRequest request) {
-		PostResponse response = postService.createPost(request);
+		PostResponse response = postService.createPost(memberId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 

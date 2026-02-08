@@ -12,6 +12,7 @@ public record PostSummaryDto(
 		int views
 ) {
 	public static PostSummaryDto from(Post post) {
-		return new PostSummaryDto(post.getTitle(), post.getAuthor(), post.getTime(), post.getViews());
+		String authorName = post.isAnonymous() ? null : post.getAuthor().getName();
+		return new PostSummaryDto(post.getTitle(), authorName, post.getTime(), post.getViews());
 	}
 }

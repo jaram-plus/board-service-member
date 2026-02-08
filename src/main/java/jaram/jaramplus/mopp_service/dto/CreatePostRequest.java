@@ -1,6 +1,7 @@
 package jaram.jaramplus.mopp_service.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jaram.jaramplus.mopp_service.validation.SafeText;
 import lombok.Getter;
@@ -23,4 +24,7 @@ public class CreatePostRequest {
     @Size(max = 50, message = "작성자명은 50자 이하여야 합니다")
     @SafeText
     private String author;
+
+	@NotNull
+	private boolean anonymous;
 }

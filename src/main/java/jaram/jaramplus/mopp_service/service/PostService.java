@@ -38,7 +38,7 @@ public class PostService {
             request.getTitle(),
             request.getContent(),
 			member,
-	        request.isAnonymous()
+	        request.getAnonymous()
         );
 
         Post savedPost = postRepository.save(post);

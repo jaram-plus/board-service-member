@@ -18,9 +18,21 @@ public class PostSummaryInternal {
 	public PostSummaryResponse toResponse() {
 		return new PostSummaryResponse(
 				title,
-				anonymous ? "익명" : author,
+				getDisplayAuthor(),
 				time,
 				views
 		);
+	}
+
+	private String getDisplayAuthor() {
+		if (anonymous) {
+			return "익명";
+		}
+
+		if (author == null) {
+			return "삭제된 사용자";
+		}
+
+		return author;
 	}
 }

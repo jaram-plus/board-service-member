@@ -23,9 +23,22 @@ public class PostResponse {
             post.getId(),
             post.getTitle(),
             post.getContent(),
-	        post.isAnonymous() ? "익명" : post.getAuthor().getName(),
+	        getDisplayAuthor(post),
             post.getTime().format(TIME_FORMATTER),
 	        post.getViews()
         );
     }
+
+	private static String getDisplayAuthor(Post post) {
+		if (post.isAnonymous()) {
+			return "익명";
+		}
+
+		// 탈퇴한 회원의 경우 author가 null일 수 있음
+		if (post.getAuthor() == null) {
+			return "삭제된 사용자";
+		}
+
+		return post.getAuthor().getName();
+	}
 }

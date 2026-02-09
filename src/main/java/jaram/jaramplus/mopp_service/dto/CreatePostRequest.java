@@ -21,6 +21,6 @@ public class CreatePostRequest {
     @SafeText
     private String content;
 
-	@NotNull
-	private boolean anonymous;
+	@NotNull(message = "익명 여부는 필수입니다")
+	private Boolean anonymous;
 }

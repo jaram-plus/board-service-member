@@ -10,9 +10,4 @@ public record PostSummaryResponse(
 		@com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
 		LocalDateTime time,
 		int views
-) {
-	public static PostSummaryResponse from(Post post) {
-		String authorName = post.isAnonymous() ? "익명" : post.getAuthor().getName();
-		return new PostSummaryResponse(post.getTitle(), authorName, post.getTime(), post.getViews());
-	}
-}
+) { }

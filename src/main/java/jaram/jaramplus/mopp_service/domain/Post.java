@@ -23,8 +23,12 @@ public class Post {
     @Column(nullable = false, length = 5000)
     private String content;
 
-    @Column(nullable = false, length = 50)
-    private String author;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member author;
+
+	@Column(nullable = false)
+	private boolean anonymous;
 
     @Column(nullable = false)
     private LocalDateTime time;
@@ -32,11 +36,12 @@ public class Post {
 	@Column(nullable = false)
 	private int views;
 
-    public static Post createPost(String title, String content, String author) {
+    public static Post createPost(String title, String content, Member author, boolean anonymous) {
         Post post = new Post();
         post.title = title;
         post.content = content;
-        post.author = (author == null || author.isBlank()) ? "익명" : author;
+        post.author = author;
+		post.anonymous = anonymous;
         post.time = LocalDateTime.now().withSecond(0).withNano(0);
 		post.views = 0;
         return post;

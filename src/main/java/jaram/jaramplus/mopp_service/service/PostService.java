@@ -1,12 +1,10 @@
 package jaram.jaramplus.mopp_service.service;
 
-import jaram.jaramplus.mopp_service.dto.PostListResponse;
-import jaram.jaramplus.mopp_service.dto.PostSummaryDto;
+import jaram.jaramplus.mopp_service.domain.Member;
+import jaram.jaramplus.mopp_service.dto.*;
 import jaram.jaramplus.mopp_service.domain.Post;
-import jaram.jaramplus.mopp_service.dto.CreatePostRequest;
-import jaram.jaramplus.mopp_service.dto.PostResponse;
+import jaram.jaramplus.mopp_service.repository.MemberRepository;
 import jaram.jaramplus.mopp_service.repository.PostRepository;
-import jaram.jaramplus.mopp_service.repository.projection.PostSummaryProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -23,6 +21,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class PostService {
 
+	private final MemberRepository memberRepository;
 	@Value("${spring.data.redis.view-dedupe-ttl}")
 	private Duration VIEW_TTL;
 
@@ -30,11 +29,16 @@ public class PostService {
 	private final StringRedisTemplate stringRedisTemplate;
 
 	@Transactional
-    public PostResponse createPost(CreatePostRequest request) {
+    public PostResponse createPost(Long memberId, CreatePostRequest request) {
+
+		Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. memberId=" + memberId));
+
         Post post = Post.createPost(
             request.getTitle(),
             request.getContent(),
-            request.getAuthor()
+			member,
+	        request.getAnonymous()
         );
 
         Post savedPost = postRepository.save(post);
@@ -44,11 +48,12 @@ public class PostService {
     }
 
     public PostListResponse getPosts(Pageable pageable) {
-        Page<PostSummaryProjection> page = postRepository.findAllBy(pageable);
+        Page<PostSummaryInternal> page = postRepository.findAllBy(pageable);
 
-        List<PostSummaryDto> list = page.getContent().stream()
-                .map(p -> new PostSummaryDto(p.getTitle(), p.getAuthor(), p.getTime(), p.getViews()))
-                .toList();
+        List<PostSummaryResponse> list = page.getContent().stream()
+		        .map(PostSummaryInternal::toResponse)
+		        .toList();
+
         return new PostListResponse(list);
     }
 
